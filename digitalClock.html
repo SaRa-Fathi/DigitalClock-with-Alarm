@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      body{
+        font-family:'Franklin Gothic Medium', sans-serif;
+        text-align: center;
+        position: relative;
+        height: 100vh;
+        overflow: hidden;
+        background-image: url('/bg.jpg');
+        background-size: cover;
+      }
+      .container{
+        position: absolute;
+        top:40%;
+        left:50%;
+        transform: translate(-50%,-60%);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+      p{
+        width: 400px;
+        font-size: 50px;
+        color: rgb(22, 84, 70);
+      }
+      #clock{
+        color: white;
+        text-shadow: 3px 3px 0px #6d6d6d;
+        font-size: 100px;
+        margin:1rem 0 ;
+      }
+      #date{
+        color: rgb(85, 190, 169);
+        text-shadow: 1px 1px 0px #6d6d6d;
+        font-size: 30px;
+        margin:1rem 0 ;
+      }
+      #alarm{
+        color:rgb(255, 0, 76) ;
+        font-size: 30px;
+      }
+      button{
+        background-color:#6d6d6d;
+        border: 1px solid wheat;
+        color: aliceblue;
+        padding: 15px 20px;
+        font-size: 20px;
+        cursor: pointer;
+        width:150px;
+        margin: auto;
+        display: none;
+      }
+      
+      
+      
+    </style>
+</head>
+<body>
+    <div class="container">
+        <P>Digital Clock</P>
+        <div id="date"></div>
+        <div id="clock"></div>
+        <div id="alarm">
+            <span></span>
+            <button type="button" id="off">OFF</button>
+            <audio id="alarm_audio" loop muted autoplay src="/alarm.mp3"></audio>
+        </div>
+    </div>
+
+    <script>
+        class Clock{
+            constructor(DateDiv,clockDiv,alarmDiv,alarmTime){
+                this.DateDiv=DateDiv;
+                this.clockDiv=clockDiv;
+                this.alarmDiv=alarmDiv;
+                this.alarmTime=alarmTime;
+                this.alarm_audio=document.querySelector(this.alarmDiv+" #alarm_audio");
+                let tim=document.querySelector(this.clockDiv);
+                let dat=document.querySelector(this.DateDiv);
+                let t=new Date();
+                let date=t.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                let time =t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+                dat.innerHTML=date;
+                tim.innerHTML=time;
+
+                this.setAlarm();
+
+                setInterval(this.updateTime.bind(this),1000);
+            }
+
+            updateTime(){
+                let tim=document.querySelector(this.clockDiv);
+                let dat=document.querySelector(this.DateDiv);
+                let t=new Date();
+                let date=t.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                let time =t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+                dat.innerHTML=date;
+                tim.innerHTML=time;
+
+                if(time==this.alarmTime){
+                    this.playAlarm();
+                }
+            }
+
+            setAlarm(){
+                const alarm=document.querySelector(this.alarmDiv + ' span');
+                alarm.innerHTML=`Alarm(${this.alarmTime})`;
+            }
+
+            playAlarm(){
+                this.alarm_audio.currentTime=0;
+                this.alarm_audio.muted=false;
+                this.alarm_audio.volume=0.5;
+                this.alarm_audio.play();
+
+                document.querySelector(this.alarmDiv + ' button').style.display='block';
+                document.querySelector(this.alarmDiv + ' button').addEventListener('click' ,()=>this.OFF(this.alarm_audio));
+                document.body.style.background='#38a4ef'
+            }
+            OFF(alarm_audio){
+                alarm_audio.muted=true;
+                document.querySelector(this.alarmDiv + ' button').style.display='none';
+                document.body.style.background= "url('/bg.jpg')";
+            }
+        }
+
+        new Clock("#date","#clock","#alarm","03:28:40 PM");
+          
+    </script>
+</body>
+</html>
